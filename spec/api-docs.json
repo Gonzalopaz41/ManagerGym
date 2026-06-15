@@ -1,0 +1,841 @@
+{
+    "openapi": "3.0.0",
+    "paths": {
+        "/api": {
+            "get": {
+                "operationId": "AppController_getHello",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "App"
+                ]
+            }
+        },
+        "/api/clients": {
+            "post": {
+                "operationId": "ClientsController_create",
+                "parameters": [],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateClientDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Client created successfully"
+                    },
+                    "400": {
+                        "description": "Invalid input data or email already exists"
+                    },
+                    "401": {
+                        "description": "Unauthorized - valid JWT required"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Create a new client",
+                "tags": [
+                    "Clients"
+                ]
+            },
+            "get": {
+                "operationId": "ClientsController_findAll",
+                "parameters": [
+                    {
+                        "name": "limit",
+                        "required": false,
+                        "in": "query",
+                        "description": "Number of results per page (default: 10)",
+                        "schema": {
+                            "default": 10,
+                            "example": 10,
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "required": false,
+                        "in": "query",
+                        "description": "Page number (default: 1)",
+                        "schema": {
+                            "default": 1,
+                            "example": 1,
+                            "type": "number"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns paginated list of clients with payments",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                        "clients": [],
+                                        "total": 0,
+                                        "page": 1,
+                                        "last_page": 1
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - valid JWT required"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Get all clients with their payments (paginated)",
+                "tags": [
+                    "Clients"
+                ]
+            }
+        },
+        "/api/clients/{term}": {
+            "get": {
+                "operationId": "ClientsController_findByTerm",
+                "parameters": [
+                    {
+                        "name": "term",
+                        "required": true,
+                        "in": "path",
+                        "description": "UUID of the client or beginning of their fullname",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns matching client(s) with payments"
+                    },
+                    "401": {
+                        "description": "Unauthorized - valid JWT required"
+                    },
+                    "404": {
+                        "description": "No client found for the given term"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Find client by UUID or partial fullname",
+                "tags": [
+                    "Clients"
+                ]
+            }
+        },
+        "/api/clients/{id}": {
+            "patch": {
+                "operationId": "ClientsController_update",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "required": true,
+                        "in": "path",
+                        "description": "UUID of the client to update",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateClientDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Client updated successfully"
+                    },
+                    "400": {
+                        "description": "Invalid UUID or email already taken"
+                    },
+                    "401": {
+                        "description": "Unauthorized - valid JWT required"
+                    },
+                    "404": {
+                        "description": "Client not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Update a client by UUID",
+                "tags": [
+                    "Clients"
+                ]
+            },
+            "delete": {
+                "operationId": "ClientsController_remove",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "required": true,
+                        "in": "path",
+                        "description": "UUID of the client to delete",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Client deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                        "message": "Client with id <uuid> has been removed"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid UUID format"
+                    },
+                    "401": {
+                        "description": "Unauthorized - valid JWT required"
+                    },
+                    "404": {
+                        "description": "Client not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Soft-delete a client by UUID",
+                "tags": [
+                    "Clients"
+                ]
+            }
+        },
+        "/api/payments/{clientId}": {
+            "post": {
+                "operationId": "PaymentsController_generatedPayment",
+                "parameters": [
+                    {
+                        "name": "clientId",
+                        "required": true,
+                        "in": "path",
+                        "description": "UUID of the client for whom the payment is being generated",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreatePaymentDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Payment generated successfully"
+                    },
+                    "400": {
+                        "description": "Invalid input data or client UUID"
+                    },
+                    "401": {
+                        "description": "Unauthorized - valid Admin token required"
+                    },
+                    "404": {
+                        "description": "Client not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Generate a new payment for a client (Admin only)",
+                "tags": [
+                    "Payments"
+                ]
+            }
+        },
+        "/api/payments/{paymentId}/archive": {
+            "patch": {
+                "operationId": "PaymentsController_archivePayment",
+                "parameters": [
+                    {
+                        "name": "paymentId",
+                        "required": true,
+                        "in": "path",
+                        "description": "UUID of the payment to archive",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Payment archived successfully"
+                    },
+                    "400": {
+                        "description": "Payment is not in expired status"
+                    },
+                    "401": {
+                        "description": "Unauthorized - valid JWT required"
+                    },
+                    "404": {
+                        "description": "Payment not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Archive an expired payment",
+                "tags": [
+                    "Payments"
+                ]
+            }
+        },
+        "/api/payments": {
+            "get": {
+                "operationId": "PaymentsController_findAll",
+                "parameters": [
+                    {
+                        "name": "status",
+                        "required": false,
+                        "in": "query",
+                        "description": "Filter by payment status",
+                        "schema": {
+                            "example": "active",
+                            "type": "string",
+                            "enum": [
+                                "active",
+                                "expired",
+                                "archived"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "clientId",
+                        "required": false,
+                        "in": "query",
+                        "description": "Filter by client UUID",
+                        "schema": {
+                            "example": "550e8400-e29b-41d4-a716-446655440000",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "required": false,
+                        "in": "query",
+                        "description": "Page number",
+                        "schema": {
+                            "default": 1,
+                            "example": 1,
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "required": false,
+                        "in": "query",
+                        "description": "Number of results per page",
+                        "schema": {
+                            "default": 10,
+                            "example": 10,
+                            "type": "number"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns paginated list of payments",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                        "payments": [],
+                                        "total": 0,
+                                        "page": 1,
+                                        "last_page": 1
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - valid JWT required"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Get all payments with optional filters (paginated)",
+                "tags": [
+                    "Payments"
+                ]
+            }
+        },
+        "/api/auth/register": {
+            "post": {
+                "operationId": "AuthController_create",
+                "parameters": [],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateUserDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "User created successfully"
+                    },
+                    "400": {
+                        "description": "Username already exists"
+                    },
+                    "401": {
+                        "description": "Unauthorized - valid Admin token required"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Register a new user (Admin only)",
+                "tags": [
+                    "Auth"
+                ]
+            }
+        },
+        "/api/auth/login": {
+            "post": {
+                "operationId": "AuthController_login",
+                "parameters": [],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/LoginUserDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Returns accessToken and refreshToken",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                        "accessToken": "eyJ...",
+                                        "refreshToken": "eyJ..."
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid credentials or inactive user"
+                    }
+                },
+                "summary": "Login and obtain access + refresh tokens",
+                "tags": [
+                    "Auth"
+                ]
+            }
+        },
+        "/api/auth/refresh": {
+            "post": {
+                "operationId": "AuthController_refresh",
+                "parameters": [],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "refresh_token": {
+                                        "type": "string",
+                                        "example": "eyJ..."
+                                    }
+                                },
+                                "required": [
+                                    "refresh_token"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Returns a new accessToken",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                        "accessToken": "eyJ..."
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid, expired or revoked refresh token"
+                    }
+                },
+                "summary": "Refresh access token using a valid refresh token",
+                "tags": [
+                    "Auth"
+                ]
+            }
+        },
+        "/api/auth/logout": {
+            "post": {
+                "operationId": "AuthController_logout",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Logged out successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                        "message": "Logged out successfully"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - valid JWT required"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Logout - revokes all active refresh tokens for the current user",
+                "tags": [
+                    "Auth"
+                ]
+            }
+        },
+        "/api/auth/users": {
+            "get": {
+                "operationId": "AuthController_getAllUsers",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Returns list of all users"
+                    },
+                    "401": {
+                        "description": "Unauthorized - valid Admin token required"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Get all users (Admin only)",
+                "tags": [
+                    "Auth"
+                ]
+            }
+        },
+        "/api/auth/users/{id}": {
+            "patch": {
+                "operationId": "AuthController_updateUser",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "required": true,
+                        "in": "path",
+                        "description": "UUID of the user to update",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateUserDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "User updated successfully"
+                    },
+                    "400": {
+                        "description": "Invalid UUID or username already taken"
+                    },
+                    "401": {
+                        "description": "Unauthorized - valid Admin token required"
+                    },
+                    "404": {
+                        "description": "User not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Update a user by ID (Admin only)",
+                "tags": [
+                    "Auth"
+                ]
+            }
+        }
+    },
+    "info": {
+        "title": "Manager Gym API",
+        "description": "API for managing gym clients, subscriptions, and payments",
+        "version": "1.0",
+        "contact": {}
+    },
+    "tags": [],
+    "servers": [],
+    "components": {
+        "schemas": {
+            "CreateClientDto": {
+                "type": "object",
+                "properties": {
+                    "fullname": {
+                        "type": "string",
+                        "description": "Full name of the client",
+                        "example": "Carlos Perez",
+                        "minLength": 1,
+                        "maxLength": 30
+                    },
+                    "phone": {
+                        "type": "number",
+                        "description": "Phone number of the client",
+                        "example": 3811234567
+                    },
+                    "email": {
+                        "type": "string",
+                        "description": "Email address of the client",
+                        "example": "email@example.com"
+                    },
+                    "address": {
+                        "type": "string",
+                        "description": "Address of the client",
+                        "example": "San Martin 333",
+                        "minLength": 1,
+                        "maxLength": 30
+                    },
+                    "birth_date": {
+                        "format": "date-time",
+                        "type": "string",
+                        "description": "Birth date of the client (ISO 8601)",
+                        "example": "1990-06-23"
+                    },
+                    "observation": {
+                        "type": "string",
+                        "description": "Observations or goals about the client",
+                        "example": "Interested in personal training sessions",
+                        "maxLength": 500
+                    }
+                },
+                "required": [
+                    "fullname",
+                    "phone"
+                ]
+            },
+            "UpdateClientDto": {
+                "type": "object",
+                "properties": {
+                    "fullname": {
+                        "type": "string",
+                        "description": "Full name of the client",
+                        "example": "Carlos Perez",
+                        "minLength": 1,
+                        "maxLength": 30
+                    },
+                    "phone": {
+                        "type": "number",
+                        "description": "Phone number of the client",
+                        "example": 3811234567
+                    },
+                    "email": {
+                        "type": "string",
+                        "description": "Email address of the client",
+                        "example": "email@example.com"
+                    },
+                    "address": {
+                        "type": "string",
+                        "description": "Address of the client",
+                        "example": "San Martin 333",
+                        "minLength": 1,
+                        "maxLength": 30
+                    },
+                    "birth_date": {
+                        "format": "date-time",
+                        "type": "string",
+                        "description": "Birth date of the client (ISO 8601)",
+                        "example": "1990-06-23"
+                    },
+                    "observation": {
+                        "type": "string",
+                        "description": "Observations or goals about the client",
+                        "example": "Interested in personal training sessions",
+                        "maxLength": 500
+                    }
+                }
+            },
+            "CreatePaymentDto": {
+                "type": "object",
+                "properties": {
+                    "amount": {
+                        "type": "number",
+                        "description": "Amount of the payment",
+                        "example": 5000
+                    },
+                    "method": {
+                        "type": "string",
+                        "description": "Payment method",
+                        "example": "cash",
+                        "enum": [
+                            "cash",
+                            "transfer"
+                        ]
+                    },
+                    "paymentDate": {
+                        "type": "string",
+                        "description": "Date of the payment (ISO 8601)",
+                        "example": "2026-06-13"
+                    }
+                },
+                "required": [
+                    "amount",
+                    "method",
+                    "paymentDate"
+                ]
+            },
+            "CreateUserDto": {
+                "type": "object",
+                "properties": {
+                    "userName": {
+                        "type": "string",
+                        "example": "john_doe",
+                        "minLength": 4,
+                        "maxLength": 20
+                    },
+                    "password": {
+                        "type": "string",
+                        "example": "Password1",
+                        "minLength": 4,
+                        "maxLength": 20,
+                        "description": "Must contain uppercase, lowercase and a number or special character"
+                    },
+                    "Role": {
+                        "type": "string",
+                        "enum": [
+                            "base",
+                            "admin"
+                        ],
+                        "default": "base"
+                    }
+                },
+                "required": [
+                    "userName",
+                    "password"
+                ]
+            },
+            "LoginUserDto": {
+                "type": "object",
+                "properties": {
+                    "userName": {
+                        "type": "string",
+                        "example": "john_doe",
+                        "minLength": 4,
+                        "maxLength": 20
+                    },
+                    "password": {
+                        "type": "string",
+                        "example": "Password1",
+                        "minLength": 6,
+                        "maxLength": 20,
+                        "description": "Must contain uppercase, lowercase and a number or special character"
+                    }
+                },
+                "required": [
+                    "userName",
+                    "password"
+                ]
+            },
+            "UpdateUserDto": {
+                "type": "object",
+                "properties": {
+                    "userName": {
+                        "type": "string",
+                        "example": "john_doe",
+                        "minLength": 4,
+                        "maxLength": 20
+                    },
+                    "password": {
+                        "type": "string",
+                        "example": "Password1",
+                        "minLength": 4,
+                        "maxLength": 20,
+                        "description": "Must contain uppercase, lowercase and a number or special character"
+                    },
+                    "Role": {
+                        "type": "string",
+                        "enum": [
+                            "base",
+                            "admin"
+                        ],
+                        "default": "base"
+                    }
+                }
+            }
+        }
+    }
+}
