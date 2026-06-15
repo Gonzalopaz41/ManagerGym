@@ -230,7 +230,8 @@ const ClientProfilePage = () => {
           </div>
         ) : (
           <div className="border border-[#222222] rounded-[8px] overflow-hidden">
-            <table className="w-full text-sm">
+            <div className="overflow-x-auto">
+            <table className="w-full text-sm min-w-[560px]">
               <thead>
                 <tr className="bg-[#0a0a0a]">
                   <th className="text-left px-4 py-3 text-[#888888] font-medium">Fecha pago</th>
@@ -277,6 +278,7 @@ const ClientProfilePage = () => {
                 })}
               </tbody>
             </table>
+            </div>
           </div>
         )}
       </div>

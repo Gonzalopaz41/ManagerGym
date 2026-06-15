@@ -31,7 +31,8 @@ const getExpirationDate = (paymentDate: string) => {
 const ClientsTable = ({ clients, onEdit, onDelete, onPay }: Props) => {
   return (
     <div className="border border-[#222222] rounded-[8px] overflow-hidden">
-      <table className="w-full text-sm">
+      <div className="overflow-x-auto">
+      <table className="w-full text-sm min-w-[520px]">
         <thead>
           <tr className="bg-[#0a0a0a]">
             <th className="text-left px-4 py-3 text-[#888888] font-medium">Nombre</th>
@@ -106,6 +107,7 @@ const ClientsTable = ({ clients, onEdit, onDelete, onPay }: Props) => {
           })}
         </tbody>
       </table>
+      </div>
     </div>
   );
 };
