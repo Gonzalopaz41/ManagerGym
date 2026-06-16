@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { Navigate, Route, Routes } from 'react-router';
 import { LoginPage, refreshThunk } from '@/features/auth';
 import { ClientsPage, ClientProfilePage } from '@/features/clients';
+import { DashboardPage } from '@/features/dashboard';
 import { useAppDispatch, useAppSelector } from '@/shared/hooks/redux.hook';
 import AppLayout from '@/shared/components/AppLayout';
 
@@ -28,7 +29,7 @@ const AppRouter = () => {
 
       {/* Rutas autenticadas */}
       <Route element={accessToken ? <AppLayout /> : <Navigate to="/login" replace />}>
-        <Route path="/dashboard" element={<div className="p-6 text-white">Dashboard</div>} />
+        <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/clients" element={<ClientsPage />} />
         <Route path="/clients/:id" element={<ClientProfilePage />} />
       </Route>
