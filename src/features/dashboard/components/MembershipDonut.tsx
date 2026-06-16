@@ -1,4 +1,4 @@
-import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { PieChart, Pie, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 interface Props {
   active: number;
@@ -15,7 +15,7 @@ const SEGMENTS = [
 const MembershipDonut = ({ active, expired, archived }: Props) => {
   const values = { active, expired, archived };
   const data = SEGMENTS
-    .map((s) => ({ name: s.name, value: values[s.key as keyof typeof values], color: s.color }))
+    .map((s) => ({ name: s.name, value: values[s.key as keyof typeof values], fill: s.color }))
     .filter((d) => d.value > 0);
 
   if (data.length === 0) {
@@ -37,11 +37,7 @@ const MembershipDonut = ({ active, expired, archived }: Props) => {
           outerRadius={88}
           paddingAngle={3}
           dataKey="value"
-        >
-          {data.map((entry, i) => (
-            <Cell key={i} fill={entry.color} />
-          ))}
-        </Pie>
+        />
         <Tooltip
           contentStyle={{
             background: '#111111',
@@ -50,7 +46,7 @@ const MembershipDonut = ({ active, expired, archived }: Props) => {
             color: '#ffffff',
             fontSize: 12,
           }}
-          formatter={(value: number, name: string) => [value, name]}
+          formatter={(value, name) => [value, name]}
         />
         <Legend
           iconType="circle"
