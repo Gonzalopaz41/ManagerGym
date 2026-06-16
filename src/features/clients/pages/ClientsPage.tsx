@@ -8,7 +8,16 @@ import ClientFormDialog from '../components/ClientFormDialog';
 import DeleteClientDialog from '../components/DeleteClientDialog';
 import Pagination from '@/shared/components/Pagination';
 import PaymentFormDialog from '@/shared/components/PaymentFormDialog';
-import type { Client } from '../types/clients.types';
+import type { Client, Payment } from '../types/clients.types';
+
+type StatusFilter = '' | Payment['status'];
+
+const getLatestStatus = (client: Client): Payment['status'] | null => {
+  if (!client.payments?.length) return null;
+  return [...client.payments].sort(
+    (a, b) => new Date(b.paymentDate).getTime() - new Date(a.paymentDate).getTime()
+  )[0].status;
+};
 
 const LIMIT = 10;
 
@@ -29,6 +38,7 @@ const ClientsPage = () => {
   );
 
   const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>('');
   const [currentPage, setCurrentPage] = useState(1);
   const [formOpen, setFormOpen] = useState(false);
   const [editingClient, setEditingClient] = useState<Client | null>(null);
@@ -36,6 +46,10 @@ const ClientsPage = () => {
   const [payingClient, setPayingClient] = useState<Client | null>(null);
 
   const isSearching = searchTerm.trim().length > 0;
+
+  const filteredClients = statusFilter
+    ? clients.filter((c) => getLatestStatus(c) === statusFilter)
+    : clients;
 
   // Carga inicial y cambio de página
   useEffect(() => {
@@ -85,16 +99,28 @@ const ClientsPage = () => {
         </Button>
       </div>
 
-      {/* Buscador */}
-      <div className="relative mb-4">
-        <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#444444]" />
-        <input
-          type="text"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="Buscar por nombre..."
-          className="h-9 w-full max-w-sm rounded-[6px] bg-[#0a0a0a] border border-[#222222] focus:border-white text-white placeholder:text-[#444444] pl-9 pr-3 text-sm outline-none transition-colors"
-        />
+      {/* Buscador + Filtro */}
+      <div className="flex flex-wrap items-center gap-2 mb-4">
+        <div className="relative">
+          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#444444]" />
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Buscar por nombre..."
+            className="h-9 w-full max-w-sm rounded-[6px] bg-[#0a0a0a] border border-[#222222] focus:border-white text-white placeholder:text-[#444444] pl-9 pr-3 text-sm outline-none transition-colors"
+          />
+        </div>
+        <select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
+          className="h-9 rounded-[6px] bg-[#0a0a0a] border border-[#222222] text-sm text-[#888888] px-3 outline-none transition-colors focus:border-white cursor-pointer"
+        >
+          <option value="">Todos</option>
+          <option value="active">Activo</option>
+          <option value="expired">Vencido</option>
+          <option value="archived">Archivado</option>
+        </select>
       </div>
 
       {/* Estados */}
@@ -117,12 +143,12 @@ const ClientsPage = () => {
             </tbody>
           </table>
         </div>
-      ) : clients.length === 0 ? (
+      ) : filteredClients.length === 0 ? (
         <div className="border border-[#222222] rounded-[8px] py-16 flex flex-col items-center gap-2">
           <p className="text-[#888888] text-sm">
-            {isSearching ? 'No se encontraron resultados.' : 'Todavía no hay clientes registrados.'}
+            {isSearching || statusFilter ? 'No se encontraron resultados.' : 'Todavía no hay clientes registrados.'}
           </p>
-          {!isSearching && (
+          {!isSearching && !statusFilter && (
             <button
               onClick={() => setFormOpen(true)}
               className="text-sm text-white underline underline-offset-4 hover:text-[#888888] transition-colors"
@@ -133,7 +159,7 @@ const ClientsPage = () => {
         </div>
       ) : (
         <ClientsTable
-          clients={clients}
+          clients={filteredClients}
           onEdit={handleEdit}
           onDelete={(c) => setDeletingClient(c)}
           onPay={(c) => setPayingClient(c)}
