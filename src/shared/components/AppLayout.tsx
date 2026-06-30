@@ -1,17 +1,23 @@
 import { useState } from 'react';
 import { NavLink, Outlet } from 'react-router';
-import { Dumbbell, LayoutDashboard, LogOut, Menu, Users, X } from 'lucide-react';
-import { useAppDispatch } from '@/shared/hooks/redux.hook';
+import { Dumbbell, LayoutDashboard, LogOut, Menu, Shield, Users, X } from 'lucide-react';
+import { useAppDispatch, useAppSelector } from '@/shared/hooks/redux.hook';
 import { logout } from '@/features/auth';
 
-const navLinks = [
+const baseLinks = [
   { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { to: '/clients',   label: 'Clientes',  icon: Users           },
 ];
 
 const AppLayout = () => {
   const dispatch = useAppDispatch();
+  const role = useAppSelector((state) => state.auth.role);
   const [open, setOpen] = useState(false);
+
+  const navLinks = [
+    ...baseLinks,
+    ...(role === 'admin' ? [{ to: '/users', label: 'Usuarios', icon: Shield }] : []),
+  ];
 
   const handleLogout = () => {
     dispatch(logout());
