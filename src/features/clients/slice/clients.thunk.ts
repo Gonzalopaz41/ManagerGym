@@ -1,9 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { clientsApi } from '../api/clients.api';
+import { getApiError } from '@/shared/helpers/apiError';
 import type { CreateClientPayload, UpdateClientPayload } from '../types/clients.types';
-
-const reject = (error: any) =>
-  error.response?.data?.message ?? 'Ocurrió un error inesperado';
 
 export const fetchClientsThunk = createAsyncThunk(
   'clients/fetchAll',
@@ -12,7 +10,9 @@ export const fetchClientsThunk = createAsyncThunk(
       const { data } = await clientsApi.getAll(params);
       return data;
     } catch (error: any) {
-      return rejectWithValue(reject(error));
+      return rejectWithValue(getApiError(error, {
+        default: 'No se pudieron cargar los clientes.',
+      }));
     }
   }
 );
@@ -24,7 +24,10 @@ export const searchClientsThunk = createAsyncThunk(
       const { data } = await clientsApi.search(term);
       return Array.isArray(data) ? data : [data];
     } catch (error: any) {
-      return rejectWithValue(reject(error));
+      return rejectWithValue(getApiError(error, {
+        404: 'No se encontraron clientes con ese criterio.',
+        default: 'Error al buscar clientes.',
+      }));
     }
   }
 );
@@ -36,7 +39,10 @@ export const createClientThunk = createAsyncThunk(
       const { data } = await clientsApi.create(payload);
       return data;
     } catch (error: any) {
-      return rejectWithValue(reject(error));
+      return rejectWithValue(getApiError(error, {
+        400: 'El email ya está registrado o los datos ingresados son inválidos.',
+        default: 'No se pudo crear el cliente. Intentá de nuevo.',
+      }));
     }
   }
 );
@@ -48,7 +54,11 @@ export const updateClientThunk = createAsyncThunk(
       const { data } = await clientsApi.update(id, payload);
       return data;
     } catch (error: any) {
-      return rejectWithValue(reject(error));
+      return rejectWithValue(getApiError(error, {
+        400: 'El email ya está en uso o los datos son inválidos.',
+        404: 'El cliente no fue encontrado.',
+        default: 'No se pudo actualizar el cliente. Intentá de nuevo.',
+      }));
     }
   }
 );
@@ -60,7 +70,10 @@ export const deleteClientThunk = createAsyncThunk(
       await clientsApi.remove(id);
       return id;
     } catch (error: any) {
-      return rejectWithValue(reject(error));
+      return rejectWithValue(getApiError(error, {
+        404: 'El cliente no fue encontrado.',
+        default: 'No se pudo eliminar el cliente. Intentá de nuevo.',
+      }));
     }
   }
 );

@@ -1,5 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { dashboardApi } from '../api/dashboard.api';
+import { getApiError } from '@/shared/helpers/apiError';
 import type { DashboardStats, DashboardPayment } from '../types/dashboard.types';
 
 export const fetchDashboardThunk = createAsyncThunk<
@@ -19,17 +20,17 @@ export const fetchDashboardThunk = createAsyncThunk<
 
       return {
         stats: {
-          totalClients:   clientsRes.data.total,
-          activeMembers:  activeRes.data.total,
-          expiredMembers: expiredRes.data.total,
+          totalClients:    clientsRes.data.total,
+          activeMembers:   activeRes.data.total,
+          expiredMembers:  expiredRes.data.total,
           archivedMembers: archivedRes.data.total,
         },
         recentPayments: paymentsRes.data.payments ?? [],
       };
     } catch (err: any) {
-      return rejectWithValue(
-        err?.response?.data?.message ?? 'Error al cargar el dashboard'
-      );
+      return rejectWithValue(getApiError(err, {
+        default: 'No se pudieron cargar los datos del dashboard.',
+      }));
     }
   }
 );
