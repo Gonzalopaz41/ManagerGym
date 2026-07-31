@@ -6,7 +6,6 @@ import { loginThunk, refreshThunk } from './auth.thunk';
 const decodeRole = (token: string): JwtPayload['Role'] | null => {
   try {
     const payload = jwtDecode<Record<string, any>>(token);
-    console.log('[JWT payload]', payload);
     const role = payload.Role ?? payload.role ?? payload.roles;
     if (role === 'admin' || role === 'base') return role;
     if (Array.isArray(role)) {
@@ -65,6 +64,12 @@ const authSlice = createSlice({
         state.accessToken = action.payload.accessToken;
         state.role = decodeRole(action.payload.accessToken);
         state.isInitializing = false;
+        // Si el backend rota el refresh token, se persiste el nuevo; si no,
+        // el guardado sigue siendo válido.
+        if (action.payload.refreshToken) {
+          state.refreshToken = action.payload.refreshToken;
+          localStorage.setItem('refreshToken', action.payload.refreshToken);
+        }
       })
       .addCase(refreshThunk.rejected, (state) => {
         state.accessToken = null;

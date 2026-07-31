@@ -5,7 +5,10 @@ import { useAppDispatch, useAppSelector } from '@/shared/hooks/redux.hook';
 import { clientsApi } from '../api/clients.api';
 import PaymentFormDialog from '@/shared/components/PaymentFormDialog';
 import { archivePaymentThunk } from '@/features/payments';
+import { ProgressHistory } from '@/features/progress';
 import type { Client, Payment } from '../types/clients.types';
+
+type ProfileTab = 'payments' | 'progress';
 
 const statusConfig: Record<Payment['status'], { label: string; className: string }> = {
   active:   { label: 'Activo',    className: 'bg-[#00cc8820] text-[#00cc88] border border-[#00cc8840]' },
@@ -83,6 +86,10 @@ const ClientProfilePage = () => {
   const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
   const [archivingId, setArchivingId] = useState<string | null>(null);
   const [archiveError, setArchiveError] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<ProfileTab>('payments');
+  // El tab de progreso se monta recién al abrirlo y después queda vivo,
+  // así no pide el historial de entrada ni lo repide en cada ida y vuelta.
+  const [progressMounted, setProgressMounted] = useState(false);
 
   useEffect(() => {
     if (clientFromStore) {
@@ -213,8 +220,31 @@ const ClientProfilePage = () => {
         </div>
       </div>
 
+      {/* Tabs */}
+      <div className="flex items-center gap-6 border-b border-[#222222] mb-6">
+        {([
+          { key: 'payments', label: 'Pagos'    },
+          { key: 'progress', label: 'Progreso' },
+        ] as const).map(({ key, label }) => (
+          <button
+            key={key}
+            onClick={() => {
+              setActiveTab(key);
+              if (key === 'progress') setProgressMounted(true);
+            }}
+            className={`-mb-px pb-3 text-sm transition-colors border-b-2 ${
+              activeTab === key
+                ? 'text-white border-white font-medium'
+                : 'text-[#888888] border-transparent hover:text-white'
+            }`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
       {/* Payments */}
-      <div>
+      <div className={activeTab === 'payments' ? '' : 'hidden'}>
         <h2 className="text-[15px] font-semibold text-white mb-4">
           Historial de pagos
           <span className="ml-2 text-xs font-normal text-[#888888]">({sortedPayments.length})</span>
@@ -282,6 +312,13 @@ const ClientProfilePage = () => {
           </div>
         )}
       </div>
+
+      {/* Progress */}
+      {progressMounted && (
+        <div className={activeTab === 'progress' ? '' : 'hidden'}>
+          <ProgressHistory clientId={client.id} clientName={client.fullname} />
+        </div>
+      )}
 
       <PaymentFormDialog
         open={paymentDialogOpen}

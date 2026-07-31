@@ -8,6 +8,11 @@ export const authApi = {
   logout: () =>
     api.post<{ message: string }>('/auth/logout'),
 
+  // refreshToken es opcional: el spec documenta solo accessToken, pero se
+  // contempla por si el backend pasa a rotar el refresh token.
   refresh: (refreshToken: string) =>
-    api.post<{ accessToken: string }>('/auth/refresh', { refresh_token: refreshToken }),
+    api.post<{ accessToken: string; refreshToken?: string }>(
+      '/auth/refresh',
+      { refresh_token: refreshToken }
+    ),
 };

@@ -26,9 +26,16 @@ export const refreshThunk = createAsyncThunk(
     try {
       const { data } = await authApi.refresh(refreshToken);
       return data;
-    } catch {
-      localStorage.removeItem('refreshToken');
-      return rejectWithValue('Tu sesión expiró. Volvé a iniciar sesión.');
+    } catch (error: any) {
+      // El token se descarta solo si el backend lo rechazó. Ante un error de red
+      // se conserva, así una caída momentánea no obliga a volver a loguearse.
+      if (error?.response?.status === 401) {
+        localStorage.removeItem('refreshToken');
+      }
+      return rejectWithValue(getApiError(error, {
+        401: 'Tu sesión expiró. Volvé a iniciar sesión.',
+        default: 'No se pudo restaurar la sesión.',
+      }));
     }
   }
 );
