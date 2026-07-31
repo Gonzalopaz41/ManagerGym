@@ -4,6 +4,8 @@ import clientsReducer from '../features/clients/slice/clients.slice';
 import paymentsReducer from '../features/payments/slice/payments.slice';
 import dashboardReducer from '../features/dashboard/slice/dashboard.slice';
 import { usersReducer } from '../features/users';
+import { progressReducer } from '../features/progress';
+import { workoutReducer } from '../features/workout';
 
 export const store = configureStore({
   reducer: {
@@ -12,6 +14,8 @@ export const store = configureStore({
     payments: paymentsReducer,
     dashboard: dashboardReducer,
     users: usersReducer,
+    progress: progressReducer,
+    workout: workoutReducer,
   }
 });
 

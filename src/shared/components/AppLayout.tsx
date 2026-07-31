@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { NavLink, Outlet } from 'react-router';
-import { Dumbbell, LayoutDashboard, LogOut, Menu, Shield, Users, X } from 'lucide-react';
+import { Dumbbell, LayoutDashboard, ListChecks, LogOut, Menu, Shield, Users, X } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '@/shared/hooks/redux.hook';
 import { logout } from '@/features/auth';
 
 const baseLinks = [
   { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { to: '/clients',   label: 'Clientes',  icon: Users           },
+  { to: '/workout',   label: 'Ejercicios', icon: ListChecks     },
 ];
 
 const AppLayout = () => {

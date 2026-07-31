@@ -631,6 +631,638 @@
                     "Auth"
                 ]
             }
+        },
+        "/api/workout/categories": {
+            "post": {
+                "operationId": "WorkoutController_createCategory",
+                "parameters": [],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateCategoryDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Category created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                        "id": "a1b2c3d4-e5f6-4789-a0b1-c2d3e4f5a6b7",
+                                        "name": "pecho"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input data or a category with that name already exists"
+                    },
+                    "401": {
+                        "description": "Unauthorized - valid JWT required"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Create a new exercise category (muscle group)",
+                "tags": [
+                    "Workout"
+                ]
+            },
+            "get": {
+                "operationId": "WorkoutController_getAllCategories",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Returns the full list of categories. An empty array is returned when there is none",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": [
+                                        {
+                                            "id": "a1b2c3d4-e5f6-4789-a0b1-c2d3e4f5a6b7",
+                                            "name": "pecho"
+                                        },
+                                        {
+                                            "id": "c3d4e5f6-a7b8-4901-b2c3-d4e5f6a7b8c9",
+                                            "name": "espalda"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - valid JWT required"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Get every category. Exercises are not included, use GET categories/:categoryId for that",
+                "tags": [
+                    "Workout"
+                ]
+            }
+        },
+        "/api/workout/categories/{categoryId}": {
+            "get": {
+                "operationId": "WorkoutController_getCategories",
+                "parameters": [
+                    {
+                        "name": "categoryId",
+                        "required": true,
+                        "in": "path",
+                        "description": "UUID of the category to retrieve",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns the category including its exercises",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                        "id": "a1b2c3d4-e5f6-4789-a0b1-c2d3e4f5a6b7",
+                                        "name": "pecho",
+                                        "exercises": [
+                                            {
+                                                "id": "b7e6d5c4-3a2b-41c0-9d8e-7f6a5b4c3d2e",
+                                                "name": "press banca",
+                                                "description": "press de banca con barra",
+                                                "categoryId": "a1b2c3d4-e5f6-4789-a0b1-c2d3e4f5a6b7"
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid UUID format"
+                    },
+                    "401": {
+                        "description": "Unauthorized - valid JWT required"
+                    },
+                    "404": {
+                        "description": "Category not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Get a category by UUID with all of its exercises",
+                "tags": [
+                    "Workout"
+                ]
+            },
+            "patch": {
+                "operationId": "WorkoutController_updateCategory",
+                "parameters": [
+                    {
+                        "name": "categoryId",
+                        "required": true,
+                        "in": "path",
+                        "description": "UUID of the category to update",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateCategoryDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Category updated successfully"
+                    },
+                    "400": {
+                        "description": "Invalid input data or the new name is already taken"
+                    },
+                    "401": {
+                        "description": "Unauthorized - valid JWT required"
+                    },
+                    "404": {
+                        "description": "Category not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Update a category by UUID",
+                "tags": [
+                    "Workout"
+                ]
+            },
+            "delete": {
+                "operationId": "WorkoutController_removeCategory",
+                "parameters": [
+                    {
+                        "name": "categoryId",
+                        "required": true,
+                        "in": "path",
+                        "description": "UUID of the category to delete",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Category deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                        "message": "Category <uuid> deleted succesfully"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid UUID format"
+                    },
+                    "401": {
+                        "description": "Unauthorized - valid JWT required"
+                    },
+                    "404": {
+                        "description": "Category not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Delete a category by UUID",
+                "tags": [
+                    "Workout"
+                ]
+            }
+        },
+        "/api/workout/exercises": {
+            "post": {
+                "operationId": "WorkoutController_createExercise",
+                "parameters": [],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateExerciseDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Exercise created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                        "id": "b7e6d5c4-3a2b-41c0-9d8e-7f6a5b4c3d2e",
+                                        "name": "press banca",
+                                        "description": "press de banca con barra",
+                                        "categoryId": "a1b2c3d4-e5f6-4789-a0b1-c2d3e4f5a6b7"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input data"
+                    },
+                    "401": {
+                        "description": "Unauthorized - valid JWT required"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Create a new exercise inside a category",
+                "tags": [
+                    "Workout"
+                ]
+            },
+            "get": {
+                "operationId": "WorkoutController_getAllExercises",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Returns the full list of exercises with their category. An empty array is returned when there is none",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": [
+                                        {
+                                            "id": "b7e6d5c4-3a2b-41c0-9d8e-7f6a5b4c3d2e",
+                                            "name": "press banca",
+                                            "description": "press de banca con barra",
+                                            "categoryId": "a1b2c3d4-e5f6-4789-a0b1-c2d3e4f5a6b7",
+                                            "category": {
+                                                "id": "a1b2c3d4-e5f6-4789-a0b1-c2d3e4f5a6b7",
+                                                "name": "pecho"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - valid JWT required"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Get every exercise of every category, each one including its category",
+                "tags": [
+                    "Workout"
+                ]
+            }
+        },
+        "/api/workout/exercises/{categoryId}": {
+            "get": {
+                "operationId": "WorkoutController_findAll",
+                "parameters": [
+                    {
+                        "name": "categoryId",
+                        "required": true,
+                        "in": "path",
+                        "description": "UUID of the category whose exercises are requested",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns the exercises of the category, each one including its category. An empty array is returned when the category has no exercises or does not exist",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": [
+                                        {
+                                            "id": "b7e6d5c4-3a2b-41c0-9d8e-7f6a5b4c3d2e",
+                                            "name": "press banca",
+                                            "description": "press de banca con barra",
+                                            "categoryId": "a1b2c3d4-e5f6-4789-a0b1-c2d3e4f5a6b7",
+                                            "category": {
+                                                "id": "a1b2c3d4-e5f6-4789-a0b1-c2d3e4f5a6b7",
+                                                "name": "pecho"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid UUID format"
+                    },
+                    "401": {
+                        "description": "Unauthorized - valid JWT required"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Get every exercise of a category",
+                "tags": [
+                    "Workout"
+                ]
+            }
+        },
+        "/api/workout/exercises/{exerciseId}": {
+            "patch": {
+                "operationId": "WorkoutController_updateExercise",
+                "parameters": [
+                    {
+                        "name": "exerciseId",
+                        "required": true,
+                        "in": "path",
+                        "description": "UUID of the exercise to update",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateExerciseDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Exercise updated successfully"
+                    },
+                    "400": {
+                        "description": "Invalid input data or the new name is already taken"
+                    },
+                    "401": {
+                        "description": "Unauthorized - valid JWT required"
+                    },
+                    "404": {
+                        "description": "Exercise not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Update an exercise by UUID",
+                "tags": [
+                    "Workout"
+                ]
+            },
+            "delete": {
+                "operationId": "WorkoutController_removeExercise",
+                "parameters": [
+                    {
+                        "name": "exerciseId",
+                        "required": true,
+                        "in": "path",
+                        "description": "UUID of the exercise to delete",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Exercise deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                        "message": "Exercise <uuid> deleted succesfully"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid UUID format"
+                    },
+                    "401": {
+                        "description": "Unauthorized - valid JWT required"
+                    },
+                    "404": {
+                        "description": "Exercise not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Delete an exercise by UUID",
+                "tags": [
+                    "Workout"
+                ]
+            }
+        },
+        "/api/clients/{clientId}/progress": {
+            "post": {
+                "operationId": "ProgressController_create",
+                "parameters": [
+                    {
+                        "name": "clientId",
+                        "required": true,
+                        "in": "path",
+                        "description": "UUID of the client the progress belongs to",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateProgressDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Progress recorded successfully"
+                    },
+                    "400": {
+                        "description": "Invalid input data or invalid UUID format"
+                    },
+                    "401": {
+                        "description": "Unauthorized - valid JWT required"
+                    },
+                    "404": {
+                        "description": "Client or exercise not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Record a new progress entry of an exercise for a client",
+                "tags": [
+                    "Progress"
+                ]
+            },
+            "get": {
+                "operationId": "ProgressController_findAllByClient",
+                "parameters": [
+                    {
+                        "name": "clientId",
+                        "required": true,
+                        "in": "path",
+                        "description": "UUID of the client whose progress is requested",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns every progress record of the client, including its exercise and the category of that exercise",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": [
+                                        {
+                                            "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                                            "clientId": "9c1e2b1a-7c4b-4a2e-9f3d-1b2c3d4e5f60",
+                                            "exerciseId": "b7e6d5c4-3a2b-41c0-9d8e-7f6a5b4c3d2e",
+                                            "sets": 4,
+                                            "reps": 10,
+                                            "weight": 60.5,
+                                            "notes": "le costó la última serie",
+                                            "recordedAt": "2026-06-13",
+                                            "createdAt": "2026-06-13T18:24:00.000Z",
+                                            "exercise": {
+                                                "id": "b7e6d5c4-3a2b-41c0-9d8e-7f6a5b4c3d2e",
+                                                "name": "press banca",
+                                                "description": "press de banca con barra",
+                                                "categoryId": "a1b2c3d4-e5f6-4789-a0b1-c2d3e4f5a6b7",
+                                                "category": {
+                                                    "id": "a1b2c3d4-e5f6-4789-a0b1-c2d3e4f5a6b7",
+                                                    "name": "pecho"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid UUID format"
+                    },
+                    "401": {
+                        "description": "Unauthorized - valid JWT required"
+                    },
+                    "404": {
+                        "description": "Client not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Get the full progress history of a client, newest record first",
+                "tags": [
+                    "Progress"
+                ]
+            }
+        },
+        "/api/clients/{clientId}/progress/{exerciseId}": {
+            "get": {
+                "operationId": "ProgressController_find",
+                "parameters": [
+                    {
+                        "name": "clientId",
+                        "required": true,
+                        "in": "path",
+                        "description": "UUID of the client whose progress is requested",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "exerciseId",
+                        "required": true,
+                        "in": "path",
+                        "description": "UUID of the exercise to filter the progress by",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns the progress records of that client for the given exercise, including the exercise itself. An empty array is returned when the client has no records for it"
+                    },
+                    "400": {
+                        "description": "Invalid UUID format"
+                    },
+                    "401": {
+                        "description": "Unauthorized - valid JWT required"
+                    },
+                    "404": {
+                        "description": "Client not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ],
+                "summary": "Get the progress history of a client for one specific exercise, newest record first",
+                "tags": [
+                    "Progress"
+                ]
+            }
         }
     },
     "info": {
@@ -835,6 +1467,117 @@
                         "default": "base"
                     }
                 }
+            },
+            "CreateCategoryDto": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "Name of the muscle group or category. Must be unique",
+                        "example": "pecho"
+                    }
+                },
+                "required": [
+                    "name"
+                ]
+            },
+            "UpdateCategoryDto": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "Name of the muscle group or category. Must be unique",
+                        "example": "pecho"
+                    }
+                }
+            },
+            "CreateExerciseDto": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "Name of the exercise. Must be unique",
+                        "example": "press banca"
+                    },
+                    "description": {
+                        "type": "string",
+                        "description": "Description of how the exercise is performed. Must be unique when provided",
+                        "example": "press de banca con barra, agarre medio"
+                    },
+                    "categoryId": {
+                        "type": "string",
+                        "description": "UUID of the category the exercise belongs to",
+                        "example": "a1b2c3d4-e5f6-4789-a0b1-c2d3e4f5a6b7",
+                        "format": "uuid"
+                    }
+                },
+                "required": [
+                    "name",
+                    "categoryId"
+                ]
+            },
+            "UpdateExerciseDto": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "Name of the exercise. Must be unique",
+                        "example": "press banca"
+                    },
+                    "description": {
+                        "type": "string",
+                        "description": "Description of how the exercise is performed. Must be unique when provided",
+                        "example": "press de banca con barra, agarre medio"
+                    },
+                    "categoryId": {
+                        "type": "string",
+                        "description": "UUID of the category the exercise belongs to",
+                        "example": "a1b2c3d4-e5f6-4789-a0b1-c2d3e4f5a6b7",
+                        "format": "uuid"
+                    }
+                }
+            },
+            "CreateProgressDto": {
+                "type": "object",
+                "properties": {
+                    "exerciseId": {
+                        "type": "string",
+                        "description": "UUID of the exercise the record belongs to",
+                        "example": "b7e6d5c4-3a2b-41c0-9d8e-7f6a5b4c3d2e",
+                        "format": "uuid"
+                    },
+                    "sets": {
+                        "type": "integer",
+                        "description": "Number of sets performed",
+                        "example": 4
+                    },
+                    "reps": {
+                        "type": "integer",
+                        "description": "Number of repetitions per set",
+                        "example": 10
+                    },
+                    "weight": {
+                        "type": "number",
+                        "description": "Weight lifted in kg. Optional, there are exercises without weight",
+                        "example": 60.5
+                    },
+                    "notes": {
+                        "type": "string",
+                        "description": "Observations of the day about the record",
+                        "example": "le costó la última serie"
+                    },
+                    "recordedAt": {
+                        "type": "string",
+                        "description": "Date the exercise was performed (ISO 8601)",
+                        "example": "2026-06-13"
+                    }
+                },
+                "required": [
+                    "exerciseId",
+                    "sets",
+                    "reps",
+                    "recordedAt"
+                ]
             }
         }
     }
