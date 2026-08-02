@@ -4,6 +4,7 @@ import { X, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAppDispatch } from '@/shared/hooks/redux.hook';
 import { createCategoryThunk, updateCategoryThunk } from '../slice/workout.thunk';
+import { clearWorkoutError } from '../slice/workout.slice';
 import type { Category } from '../types/workout.types';
 
 interface Props {
@@ -28,6 +29,7 @@ const CategoryFormDialog = ({ open, onClose, category }: Props) => {
   useEffect(() => {
     setName(category?.name ?? '');
     setError(null);
+    dispatch(clearWorkoutError());
   }, [category, open]);
 
   const handleSubmit = async (e: React.FormEvent) => {

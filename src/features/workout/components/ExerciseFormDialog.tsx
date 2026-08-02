@@ -8,6 +8,7 @@ import {
   fetchExercisesThunk,
   updateExerciseThunk,
 } from '../slice/workout.thunk';
+import { clearWorkoutError } from '../slice/workout.slice';
 import type { CreateExercisePayload, Exercise } from '../types/workout.types';
 
 interface Props {
@@ -46,6 +47,9 @@ const ExerciseFormDialog = ({ open, onClose, exercise }: Props) => {
       setForm(emptyForm);
     }
     setError(null);
+    // El slice también guarda el error del rechazo y WorkoutPage lo muestra a
+    // nivel de página: sin esto quedaría pegado ahí al cancelar el diálogo.
+    dispatch(clearWorkoutError());
   }, [exercise, open]);
 
   const set =

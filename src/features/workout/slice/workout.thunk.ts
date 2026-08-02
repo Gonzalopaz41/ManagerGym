@@ -78,7 +78,7 @@ export const createExerciseThunk = createAsyncThunk(
       return data;
     } catch (error: any) {
       return rejectWithValue(getApiError(error, {
-        400: 'Los datos del ejercicio son inválidos.',
+        400: 'Ya existe un ejercicio con ese nombre o esa descripción.',
         default: 'No se pudo crear el ejercicio. Intentá de nuevo.',
       }));
     }
@@ -96,7 +96,7 @@ export const updateExerciseThunk = createAsyncThunk(
       return data;
     } catch (error: any) {
       return rejectWithValue(getApiError(error, {
-        400: 'Los datos del ejercicio son inválidos.',
+        400: 'Ya existe otro ejercicio con ese nombre.',
         404: 'El ejercicio no fue encontrado.',
         default: 'No se pudo actualizar el ejercicio. Intentá de nuevo.',
       }));
