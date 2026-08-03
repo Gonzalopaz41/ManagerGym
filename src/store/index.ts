@@ -6,6 +6,7 @@ import dashboardReducer from '../features/dashboard/slice/dashboard.slice';
 import { usersReducer } from '../features/users';
 import { progressReducer } from '../features/progress';
 import { workoutReducer } from '../features/workout';
+import { routinesReducer } from '../features/routines';
 
 export const store = configureStore({
   reducer: {
@@ -16,6 +17,7 @@ export const store = configureStore({
     users: usersReducer,
     progress: progressReducer,
     workout: workoutReducer,
+    routines: routinesReducer,
   }
 });
 

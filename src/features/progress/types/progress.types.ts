@@ -3,17 +3,12 @@ export interface ProgressCategory {
   name: string;
 }
 
-/**
- * `category` solo viene en GET /clients/{clientId}/progress.
- * El filtrado por ejercicio (GET .../progress/{exerciseId}) devuelve el
- * ejercicio sin su categoría, por eso es opcional.
- */
 export interface ProgressExercise {
   id: string;
   name: string;
   description?: string | null;
   categoryId: string;
-  category?: ProgressCategory;
+  category: ProgressCategory;
 }
 
 export interface ProgressRecord {

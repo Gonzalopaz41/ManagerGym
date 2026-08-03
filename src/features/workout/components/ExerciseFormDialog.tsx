@@ -3,11 +3,7 @@ import { Dialog } from 'radix-ui';
 import { X, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAppDispatch, useAppSelector } from '@/shared/hooks/redux.hook';
-import {
-  createExerciseThunk,
-  fetchExercisesThunk,
-  updateExerciseThunk,
-} from '../slice/workout.thunk';
+import { createExerciseThunk, updateExerciseThunk } from '../slice/workout.thunk';
 import { clearWorkoutError } from '../slice/workout.slice';
 import type { CreateExercisePayload, Exercise } from '../types/workout.types';
 
@@ -79,8 +75,6 @@ const ExerciseFormDialog = ({ open, onClose, exercise }: Props) => {
       return;
     }
 
-    // Ni el POST ni el PATCH devuelven el category embebido que la tabla usa.
-    dispatch(fetchExercisesThunk());
     onClose();
   };
 

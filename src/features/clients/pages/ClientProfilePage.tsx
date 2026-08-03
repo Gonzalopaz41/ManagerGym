@@ -6,9 +6,10 @@ import { clientsApi } from '../api/clients.api';
 import PaymentFormDialog from '@/shared/components/PaymentFormDialog';
 import { archivePaymentThunk } from '@/features/payments';
 import { ProgressHistory } from '@/features/progress';
+import { RoutinesTab } from '@/features/routines';
 import type { Client, Payment } from '../types/clients.types';
 
-type ProfileTab = 'payments' | 'progress';
+type ProfileTab = 'payments' | 'progress' | 'routines';
 
 const statusConfig: Record<Payment['status'], { label: string; className: string }> = {
   active:   { label: 'Activo',    className: 'bg-[#00cc8820] text-[#00cc88] border border-[#00cc8840]' },
@@ -87,9 +88,10 @@ const ClientProfilePage = () => {
   const [archivingId, setArchivingId] = useState<string | null>(null);
   const [archiveError, setArchiveError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<ProfileTab>('payments');
-  // El tab de progreso se monta recién al abrirlo y después queda vivo,
-  // así no pide el historial de entrada ni lo repide en cada ida y vuelta.
+  // Los tabs se montan recién al abrirlos y después quedan vivos, así no
+  // piden datos de entrada ni los repiden en cada ida y vuelta.
   const [progressMounted, setProgressMounted] = useState(false);
+  const [routinesMounted, setRoutinesMounted] = useState(false);
 
   useEffect(() => {
     if (clientFromStore) {
@@ -225,12 +227,14 @@ const ClientProfilePage = () => {
         {([
           { key: 'payments', label: 'Pagos'    },
           { key: 'progress', label: 'Progreso' },
+          { key: 'routines', label: 'Rutinas'  },
         ] as const).map(({ key, label }) => (
           <button
             key={key}
             onClick={() => {
               setActiveTab(key);
               if (key === 'progress') setProgressMounted(true);
+              if (key === 'routines') setRoutinesMounted(true);
             }}
             className={`-mb-px pb-3 text-sm transition-colors border-b-2 ${
               activeTab === key
@@ -317,6 +321,13 @@ const ClientProfilePage = () => {
       {progressMounted && (
         <div className={activeTab === 'progress' ? '' : 'hidden'}>
           <ProgressHistory clientId={client.id} clientName={client.fullname} />
+        </div>
+      )}
+
+      {/* Routines */}
+      {routinesMounted && (
+        <div className={activeTab === 'routines' ? '' : 'hidden'}>
+          <RoutinesTab clientId={client.id} clientName={client.fullname} />
         </div>
       )}
 

@@ -19,11 +19,15 @@ export const fetchClientsThunk = createAsyncThunk(
 
 export const searchClientsThunk = createAsyncThunk(
   'clients/search',
-  async (term: string, { rejectWithValue }) => {
+  async (term: string, { rejectWithValue, signal }) => {
     try {
-      const { data } = await clientsApi.search(term);
+      const { data } = await clientsApi.search(term, signal);
       return Array.isArray(data) ? data : [data];
     } catch (error: any) {
+      // La abortó una búsqueda más nueva: no es un error para mostrarle
+      // al usuario, así que se propaga sin pasar por rejectWithValue.
+      if (signal.aborted) throw error;
+
       return rejectWithValue(getApiError(error, {
         404: 'No se encontraron clientes con ese criterio.',
         default: 'Error al buscar clientes.',
