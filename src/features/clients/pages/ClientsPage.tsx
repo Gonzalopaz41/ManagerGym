@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Search, UserPlus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAppDispatch, useAppSelector } from '@/shared/hooks/redux.hook';
@@ -45,6 +45,9 @@ const ClientsPage = () => {
   const [deletingClient, setDeletingClient] = useState<Client | null>(null);
   const [payingClient, setPayingClient] = useState<Client | null>(null);
 
+  // Búsqueda en vuelo, para poder abortarla cuando llega una más nueva.
+  const inFlightSearch = useRef<{ abort: () => void } | null>(null);
+
   const isSearching = searchTerm.trim().length > 0;
 
   const filteredClients = statusFilter
@@ -61,6 +64,10 @@ const ClientsPage = () => {
   // Búsqueda con debounce
   useEffect(() => {
     if (!searchTerm.trim()) {
+      // Al limpiar el buscador también hay que cortar la búsqueda en vuelo:
+      // si no, su respuesta pisaría el listado paginado que se pide acá.
+      inFlightSearch.current?.abort();
+      inFlightSearch.current = null;
       dispatch(fetchClientsThunk({ page: 1, limit: LIMIT }));
       setCurrentPage(1);
       return;
@@ -68,7 +75,11 @@ const ClientsPage = () => {
     if (searchTerm.trim().length < 2) return;
 
     const timer = setTimeout(() => {
-      dispatch(searchClientsThunk(searchTerm.trim()));
+      // El debounce espacia las peticiones pero no las ordena: una respuesta
+      // lenta de un término viejo puede llegar después de la del actual y
+      // pisarla. Abortar la anterior garantiza que gane siempre la última.
+      inFlightSearch.current?.abort();
+      inFlightSearch.current = dispatch(searchClientsThunk(searchTerm.trim()));
     }, 400);
 
     return () => clearTimeout(timer);

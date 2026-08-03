@@ -35,25 +35,22 @@ const workoutSlice = createSlice({
         state.error = action.payload as string;
       })
       .addCase(createCategoryThunk.fulfilled, (state, action) => {
-        state.categories.push(action.payload);
+        // La respuesta trae además un `exercises` vacío que el store no usa.
+        const { id, name } = action.payload;
+        state.categories.push({ id, name });
       })
       .addCase(createCategoryThunk.rejected, (state, action) => {
         state.error = action.payload as string;
       })
       .addCase(updateCategoryThunk.fulfilled, (state, action) => {
-        // El PATCH no documenta su respuesta, así que se aplica lo que enviamos.
-        const { categoryId, payload } = action.meta.arg;
-        const category = state.categories.find((c) => c.id === categoryId);
-        if (!category || !payload.name) return;
+        const { id, name } = action.payload;
+        const category = state.categories.find((c) => c.id === id);
+        if (category) category.name = name;
 
-        category.name = payload.name;
-
-        // El listado de ejercicios trae category embebido: sin esto la tabla
-        // seguiría mostrando el nombre viejo hasta el próximo refetch.
+        // El listado de ejercicios trae category embebido y la respuesta del
+        // PATCH no incluye esos ejercicios, así que se sincroniza acá.
         state.exercises.forEach((exercise) => {
-          if (exercise.categoryId === categoryId) {
-            exercise.category = { id: categoryId, name: payload.name! };
-          }
+          if (exercise.categoryId === id) exercise.category = { id, name };
         });
       })
       .addCase(updateCategoryThunk.rejected, (state, action) => {
@@ -72,11 +69,17 @@ const workoutSlice = createSlice({
         state.loading = false;
         state.error = action.payload as string;
       })
-      // create y update — el POST devuelve el ejercicio sin su category
-      // embebido y el PATCH no documenta su respuesta, así que el store no se
-      // escribe con ellas: el componente refetchea el listado, que sí la trae.
+      // create y update — ambas respuestas traen el ejercicio con su category,
+      // con la misma forma que el GET, así que se escriben directo.
+      .addCase(createExerciseThunk.fulfilled, (state, action) => {
+        state.exercises.push(action.payload);
+      })
       .addCase(createExerciseThunk.rejected, (state, action) => {
         state.error = action.payload as string;
+      })
+      .addCase(updateExerciseThunk.fulfilled, (state, action) => {
+        const idx = state.exercises.findIndex((e) => e.id === action.payload.id);
+        if (idx !== -1) state.exercises[idx] = action.payload;
       })
       .addCase(updateExerciseThunk.rejected, (state, action) => {
         state.error = action.payload as string;

@@ -133,7 +133,7 @@ const ProgressHistory = ({ clientId, clientName }: Props) => {
                       </td>
                       <td className="px-4 py-3 text-white">{record.exercise.name}</td>
                       <td className="px-4 py-3 text-[#888888] hidden sm:table-cell">
-                        {record.exercise.category?.name ?? '—'}
+                        {record.exercise.category.name}
                       </td>
                       <td className="px-4 py-3 text-white whitespace-nowrap">
                         {record.sets} × {record.reps}
@@ -159,10 +159,9 @@ const ProgressHistory = ({ clientId, clientName }: Props) => {
         clientId={clientId}
         clientName={clientName}
         onSuccess={() => {
-          // Vuelve al historial completo: el registro nuevo puede ser de un
-          // ejercicio distinto al que está filtrado.
+          // El slice ya sumó el registro al store. Solo se limpia el filtro,
+          // porque el nuevo puede ser de un ejercicio distinto al filtrado.
           setExerciseFilter('all');
-          dispatch(fetchProgressThunk(clientId));
         }}
       />
     </div>

@@ -18,24 +18,6 @@ export const fetchProgressThunk = createAsyncThunk(
   }
 );
 
-export const fetchProgressByExerciseThunk = createAsyncThunk(
-  'progress/fetchByExercise',
-  async (
-    { clientId, exerciseId }: { clientId: string; exerciseId: string },
-    { rejectWithValue }
-  ) => {
-    try {
-      const { data } = await progressApi.getByExercise(clientId, exerciseId);
-      return data;
-    } catch (error: any) {
-      return rejectWithValue(getApiError(error, {
-        404: 'El cliente no fue encontrado.',
-        default: 'No se pudo cargar el progreso de ese ejercicio.',
-      }));
-    }
-  }
-);
-
 export const createProgressThunk = createAsyncThunk(
   'progress/create',
   async (

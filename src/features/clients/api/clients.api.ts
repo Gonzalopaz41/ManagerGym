@@ -10,8 +10,8 @@ export const clientsApi = {
   getAll: (params: { page: number; limit: number }) =>
     api.get<PaginatedClients>('/clients', { params }),
 
-  search: (term: string) =>
-    api.get<Client | Client[]>(`/clients/${encodeURIComponent(term)}`),
+  search: (term: string, signal?: AbortSignal) =>
+    api.get<Client | Client[]>(`/clients/${encodeURIComponent(term)}`, { signal }),
 
   create: (payload: CreateClientPayload) =>
     api.post<Client>('/clients', payload),

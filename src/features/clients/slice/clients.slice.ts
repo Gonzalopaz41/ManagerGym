@@ -53,6 +53,9 @@ const clientsSlice = createSlice({
         state.clients = action.payload;
       })
       .addCase(searchClientsThunk.rejected, (state, action) => {
+        // Abortada porque llegó una búsqueda más nueva: ya hay otra en curso,
+        // así que no se apaga el loading ni se muestra un error.
+        if (action.meta.aborted) return;
         state.loading = false;
         state.error = action.payload as string;
       })
