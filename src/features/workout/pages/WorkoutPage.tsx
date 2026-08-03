@@ -9,16 +9,6 @@ import DeleteExerciseDialog from '../components/DeleteExerciseDialog';
 import CategoryFormDialog from '../components/CategoryFormDialog';
 import type { Category, Exercise } from '../types/workout.types';
 
-const SkeletonRow = () => (
-  <tr className="border-t border-[#111111]">
-    {[130, 70, 180, 40].map((w, i) => (
-      <td key={i} className="px-4 py-3">
-        <div className="h-4 bg-[#1a1a1a] rounded animate-pulse" style={{ width: w }} />
-      </td>
-    ))}
-  </tr>
-);
-
 const WorkoutPage = () => {
   const dispatch = useAppDispatch();
   const { categories, exercises, loading, error } = useAppSelector((state) => state.workout);
@@ -71,25 +61,25 @@ const WorkoutPage = () => {
   };
 
   return (
-    <div className="p-6 flex flex-col gap-6 max-w-[1200px]">
-      <div className="flex items-start justify-between gap-4">
+    <div className="p-6 flex flex-col gap-6 max-w-[1200px] mx-auto">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-white">Ejercicios</h1>
           <p className="text-sm text-[#888888] mt-0.5">
             Catálogo de ejercicios por grupo muscular
           </p>
         </div>
-        <div className="flex flex-wrap items-center justify-end gap-3 shrink-0">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:shrink-0">
           <Button
             onClick={() => openCategoryForm(null)}
-            className="h-9 rounded-[6px] bg-transparent border border-[#222222] text-white hover:border-[#444444] text-sm flex items-center gap-2"
+            className="w-full sm:w-auto h-9 rounded-[6px] bg-transparent border border-[#222222] text-white hover:border-[#444444] text-sm flex items-center gap-2"
           >
             <FolderPlus size={15} />
             Nueva categoría
           </Button>
           <Button
             onClick={handleCreate}
-            className="h-9 rounded-[6px] bg-white text-black hover:bg-[#e0e0e0] text-sm font-medium border-0 flex items-center gap-2"
+            className="w-full sm:w-auto h-9 rounded-[6px] bg-white text-black hover:bg-[#e0e0e0] text-sm font-medium border-0 flex items-center gap-2"
           >
             <Plus size={15} />
             Nuevo ejercicio
@@ -125,25 +115,7 @@ const WorkoutPage = () => {
 
       {error && <p className="text-sm text-[#ff4444]">{error}</p>}
 
-      {loading ? (
-        <div className="border border-[#222222] rounded-[8px] overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm min-w-[560px]">
-              <thead>
-                <tr className="bg-[#0a0a0a]">
-                  <th className="text-left px-4 py-3 text-[#888888] font-medium">Ejercicio</th>
-                  <th className="text-left px-4 py-3 text-[#888888] font-medium">Categoría</th>
-                  <th className="text-left px-4 py-3 text-[#888888] font-medium hidden md:table-cell">Descripción</th>
-                  <th className="px-4 py-3" />
-                </tr>
-              </thead>
-              <tbody>
-                {Array.from({ length: 4 }).map((_, i) => <SkeletonRow key={i} />)}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      ) : visibleExercises.length === 0 ? (
+      {!loading && visibleExercises.length === 0 ? (
         <div className="border border-[#222222] rounded-[8px] py-12 text-center">
           <p className="text-[#888888] text-sm">
             {exercises.length === 0
@@ -154,6 +126,7 @@ const WorkoutPage = () => {
       ) : (
         <ExercisesTable
           exercises={visibleExercises}
+          loading={loading}
           onEdit={handleEdit}
           onDelete={setDeleteTarget}
         />
