@@ -37,7 +37,7 @@ const AppLayout = () => {
         >
           <Menu size={20} />
         </button>
-        <span className="ml-4 text-white text-sm font-semibold">ManagerGym</span>
+        <span className="ml-4 text-white text-sm font-semibold">Muscle-Up</span>
       </header>
 
       {/* Overlay */}
